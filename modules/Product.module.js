@@ -1,4 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
+const validator = require("validator");
+const { ObjectId } = mongoose.Schema.Types;
 //schema design
 const productSchema = mongoose.Schema(
   {
@@ -7,6 +9,7 @@ const productSchema = mongoose.Schema(
       require: [true, "please enter a product name"],
       unique: true,
       trim: true,
+      lowercase: true,
       minLength: [3, "minimum length is 3"],
       maxLength: [100, "maximum length is 100"],
     },
@@ -14,46 +17,46 @@ const productSchema = mongoose.Schema(
       type: String,
       require: true,
     },
-    price: {
-      type: Number,
-      require: true,
-      min: [0, "Price can't be negative"],
-    },
     unit: {
       type: String,
       require: true,
       enum: {
-        values: ["kg", "litter", "pcs"],
-        message: "unit value can't be {VALUES}, must be kg/litter/pcs",
+        values: ["kg", "litter", "pcs", "bag"],
+        message: "unit value can't be {VALUE}, must be kg/litter/pcs",
       },
     },
-    quantity: {
-      type: Number,
-      require: true,
-      min: [0, "Quantity can't be negative"],
+    image: [{
+      type: String,
       validate: {
         validator: (value) => {
-          const isInteger = Number.isInteger(value);
-          if (isInteger) {
-            return true;
-          } else {
+          if (!Array.isArray(value)) {
             return false;
           }
+          let isValid = true;
+          value.forEach((url) => {
+            if (!validator.isURL(url)) {
+              isValid = false;
+            }
+          });
+          return isValid;
         },
       },
-      message: "Quantity must be integer",
-    },
-    status: {
+      message: "please provide valid image url"
+    }],
+    category: {
       type: String,
-      require: true,
-      enum: {
-        values: ["in-stock", "out-of-stock", "discontinued"],
-        message: "status can't be {VALUES}",
-      },
+      require:true,
     },
-    supplier: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Supplier",
+    brand: {
+      name: {
+        type: String,
+        require: true,
+      },
+      id: {
+        type: ObjectId,
+        ref: "Brand", 
+        require:true,
+      }
     },
   },
   {
