@@ -27,4 +27,4 @@ const storeSchema = mongoose.Schema(
 );
 
 const Store = mongoose.model("Store", brandSchema);
-exports = Store;
+module.exports = Store;
