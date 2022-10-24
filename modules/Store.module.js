@@ -26,5 +26,5 @@ const storeSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Store = mongoose.model("Store", brandSchema);
+const Store = mongoose.model("Store", storeSchema);
 module.exports = Store;
